@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-"""
-Instagram Non-Follower Manager - PRO SINGLE FILE EDITION
-Run: pip install fastapi uvicorn instagrapi python-multipart
-     uvicorn app:app --reload
-"""
-
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel
@@ -21,7 +15,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# -------------------- Models --------------------
 class LoginData(BaseModel):
     username: str
     password: str
@@ -35,7 +28,6 @@ class InstagramUser(BaseModel):
     profile_pic_url: str
     follower_count: int = 0
 
-# -------------------- In-Memory Store --------------------
 active_clients: Dict[str, Client] = {}
 comparison_cache: Dict[str, Dict] = {}
 activity_logs: Dict[str, deque] = {}
@@ -47,7 +39,6 @@ def add_activity_log(username: str, message: str):
     activity_logs[username].appendleft(f"[{timestamp}] {message}")
     logger.info(f"[{username}] {message}")
 
-# -------------------- Helper Functions --------------------
 def map_user(user) -> InstagramUser:
     return InstagramUser(
         pk=user.pk,
@@ -85,8 +76,8 @@ def compute_comparison(followers, following):
         "mutual_count": len(mutual)
     }
 
-# -------------------- FastAPI App --------------------
 app = FastAPI(title="Instagram Non-Follower Manager")
+
 @app.post("/api/login")
 async def api_login(login: LoginData):
     client = Client()
@@ -148,7 +139,7 @@ async def export_json(username: str):
     response.headers["Content-Disposition"] = "attachment; filename=non_followers.json"
     add_activity_log(username, f"📁 Exported {len(data['non_followers'])} non‑followers to JSON")
     return response
-     # -------------------- Frontend HTML (fixed) --------------------
+
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
